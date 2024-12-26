@@ -1,0 +1,6 @@
+.vscode
+.envrc
+.direnv
+build
+builddir
+result
