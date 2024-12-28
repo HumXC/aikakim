@@ -10,7 +10,6 @@ public class Aikakim.Window : Gtk.Window, Kimpanel, Kimpanel2, IMPanel {
     public unowned Gtk.Box lookup_table_box;
     [GtkChild]
     public unowned Gtk.Box aux_box;
-    private unowned ZwpTextInputV3.TextInput text_input;
     private string[] need_update_names = {
         "lookup-table-visible",
         "aux-visible",
@@ -38,23 +37,17 @@ public class Aikakim.Window : Gtk.Window, Kimpanel, Kimpanel2, IMPanel {
             }
         });
     }
-    public Window () {
 
-        var display = (Gdk.Wayland.Display) Gdk.Display.get_default ();
-        unowned Wl.Seat seat = ((Gdk.Wayland.Seat) display.list_seats ().first ().data).get_wl_seat ();
-        var data = Data () { seat = seat };
+    public void on_enter (void* data, Wl.Pointer wl_pointer, uint32 serial, Wl.Surface surface, Wl.fixed_t surface_x, Wl.fixed_t surface_y) {
+        print ("enter: %d, %d\n", surface_x, surface_y);
+    }
 
-        unowned var d = display.get_wl_display ();
-        var reg = d.get_registry ();
-        reg.add_listener ({
-            global:  (Wl.RegistryListenerGlobal) global,
-        }, &data);
-        d.dispatch ();
-        print (data.text_input.get_class ());
-        text_input = data.text_input;
-        text_input.enable ();
+    public void on_leave (void* data, Wl.Pointer wl_pointer, uint32 serial, Wl.Surface surface) {
+        print ("leave\n");
+    }
 
-        return;
+    public void on_motion (void* data, Wl.Pointer wl_pointer, uint32 time, Wl.fixed_t surface_x, Wl.fixed_t surface_y) {
+        print ("motion: %d, %d\n", surface_x, surface_y);
     }
 
     public void update_window () {
@@ -71,7 +64,6 @@ public class Aikakim.Window : Gtk.Window, Kimpanel, Kimpanel2, IMPanel {
 
     public void SetSpotRect (int x, int y, int w, int h) {
         set_position (x + w, y + h);
-        print ("SetSpotRect: %d, %d, %d, %d\n", x, y, w, h);
     }
 
     public void SetRelativeSpotRect (int x, int y, int w, int h) {
@@ -104,17 +96,4 @@ public class Aikakim.Window : Gtk.Window, Kimpanel, Kimpanel2, IMPanel {
         GtkLayerShell.set_margin (this, GtkLayerShell.Edge.LEFT, x);
         GtkLayerShell.set_margin (this, GtkLayerShell.Edge.TOP, y);
     }
-}
-private void global (void* data, Wl.Registry wl_registry, uint32 name, string @interface, uint32 version) {
-    if (@interface != "zwp_text_input_manager_v3")return;
-    var manager = wl_registry.bind<ZwpTextInputV3.Manager> (name, ref ZwpTextInputV3.Manager.iface, version);
-    var d = (Data*) data;
-
-    unowned var ipt = (ZwpTextInputV3.TextInput) manager.get_text_input (d.seat);
-    d.text_input = ipt;
-}
-
-public struct Data {
-    unowned Wl.Seat seat;
-    unowned ZwpTextInputV3.TextInput text_input;
 }

@@ -3,9 +3,6 @@ sources += [
     'dbus.vala',
     'window.vala',
     'ensure-types.vala',
-    'zwp-text-input-v3.vapi',
-    'zwp_text_input_v3.c',
-    'zwp_text_input_v3.h',
 ]
 deps = [
     dependency('gtk4'),
