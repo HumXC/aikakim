@@ -22,6 +22,7 @@
       ]);
     shellHook = ''
       echo "${pkgs.lldb}/bin/lldb-dap"
+      echo "${pkgs.wayland-protocols}"
     '';
   };
 }

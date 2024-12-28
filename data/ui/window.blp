@@ -1,0 +1,35 @@
+using Gtk 4.0;
+template $AikakimWindow : Gtk.Window {
+    resizable: false;
+    visible: bind template.window_visible;
+    Overlay {
+        css-name: "aikakim";
+        hexpand: false;
+        vexpand: false;
+        [overlay]
+        Box lookup_table_box{
+            css-name: "lookup-table";
+            visible: bind template.lookup_table_visible;
+            height-request: 300;
+            width-request: 300;
+            halign: start;
+            valign: start;
+        }
+        [overlay]
+        Box aux_box {
+            css-name: "aux-box";
+            visible: bind template.aux_visible;
+            height-request: 30;
+            width-request: 30;
+            halign: start;
+            valign: start;
+            Label {
+                hexpand: true;
+                vexpand: true;
+                css-name: "aux";
+                xalign: 0.5;
+                label: bind template.aux;
+            }
+        }
+    }
+}

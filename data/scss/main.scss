@@ -1,57 +1,9 @@
 * {
-    color: white;
+    background-color: transparent;
 }
-time-label {
-    color: rgb(255, 255, 255);
-    text-shadow: 0 0 8px #42424223;
-    font-size: 128px;
-    padding: 2px;
+lookup-table {
+    background-color: rgba(197, 187, 38, 0.322);
 }
-date-label {
-    color: rgb(255, 255, 255);
-    font: 22px bold;
-    padding: 5px;
-    text-shadow: 0 0 5px #34343435;
-}
-input-page {
-    user-avatar {
-        background: #414141;
-        border-radius: 100%;
-    }
-    password-input {
-        background-color: #0000001e;
-        transition: background-color 0.3s ease-in-out;
-        transition: border 0.3s ease-in-out;
-        border-radius: 20px;
-        border: 2px solid #ffffff43;
-        padding: 6px 12px;
-        padding-right: 22px;
-        selection {
-            background: #ffffff3e;
-            border-radius: 20px;
-        }
-    }
-    password-input:focus-within {
-        background-color: #00000052;
-        border: 2px solid #cacaca;
-        transition: background-color 0.3s ease-in-out;
-        transition: border 0.3s ease-in-out;
-    }
-    message {
-        color: #ffffffd2;
-        font-size: 14px;
-    }
-    username {
-        font-size: 32px;
-    }
-    session {
-        font-size: 20px;
-    }
-    session-comment {
-        font-size: 14px;
-        color: #ffffffb9;
-    }
-}
-mask {
-    background-color: black;
+aux {
+    background-color: rgba(128, 0, 128, 0.367);
 }

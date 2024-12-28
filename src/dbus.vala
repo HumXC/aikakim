@@ -26,9 +26,6 @@ public class InputMethod : Object  {
             null,
             GLib.DBusSignalFlags.NONE,
             handler);
-        UpdatePreeditText.connect ((a, b) => {
-            print ("UpdatePreeditText: " + a + " " + b + "\n");
-        });
     }
 
     private void handler (GLib.DBusConnection conn,
@@ -105,56 +102,7 @@ public class InputMethod : Object  {
 }
 
 [DBus (name = "org.kde.impanel")]
-public class IMPanel : Object  {
-    void on_bus_aquired (DBusConnection conn) {
-        try {
-            conn.register_object ("/org/kde/impanel", this);
-        } catch (IOError e) {
-            stderr.printf ("Could not register service\n");
-        }
-    }
-
-    void on_name_acquired () {
-        PanelCreated ();
-        PanelCreated2 ();
-    }
-
-    public IMPanel () {
-        Bus.own_name
-            (GLib.BusType.SESSION,
-            "org.kde.impanel",
-            GLib.BusNameOwnerFlags.NONE,
-            on_bus_aquired,
-            on_name_acquired,
-            () => stderr.printf ("Could not aquire name\n"));
-
-        MovePreeditCaret.connect (() => {
-            print ("MovePreeditCaret\n");
-        });
-        SelectCandidate.connect (() => {
-            print ("SelectCandidate\n");
-        });
-        LookupTablePageUp.connect (() => {
-            print ("LookupTablePageUp\n");
-        });
-        LookupTablePageDown.connect (() => {
-            print ("LookupTablePageDown\n");
-        });
-        TriggerProperty.connect (() => {
-            print ("TriggerProperty\n");
-        });
-        Exit.connect (() => {
-            print ("Exit\n");
-        });
-        ReloadConfig.connect (() => {
-            print ("ReloadConfig\n");
-        });
-        Configure.connect (() => {
-            print ("Configure\n");
-        });
-    }
-
-    // kimpanel
+public interface Kimpanel : Object  {
     public signal void MovePreeditCaret (int position);
     public signal void SelectCandidate (int index);
     public signal void LookupTablePageUp ();
@@ -164,23 +112,34 @@ public class IMPanel : Object  {
     public signal void Exit ();
     public signal void ReloadConfig ();
     public signal void Configure ();
-
-    // kimpanel2
-    public signal void PanelCreated2 ();
-
-    public void SetSpotRect (int x, int y, int w, int h) {
-        print ("SetLookupTable");
-    }
-
-    public void SetRelativeSpotRect (int x, int y, int w, int h) {
-        print ("SetLookupTable");
-    }
-
-    public void SetRelativeSpotRectV2 (int x, int y, int w, int h, double scale) {
-        print ("SetLookupTable");
-    }
-
-    public void SetLookupTable (string[] label, string[] text, string[] attr, bool hasPrev, bool hasNext, int cursor, int layout) {
-        print ("SetLookupTable");
-    }
 }
+
+[DBus (name = "org.kde.impanel2")]
+public interface Kimpanel2 : Object  {
+    public signal void PanelCreated2 ();
+    public abstract void SetSpotRect (int x, int y, int w, int h);
+    public abstract void SetRelativeSpotRect (int x, int y, int w, int h);
+    public abstract void SetRelativeSpotRectV2 (int x, int y, int w, int h, double scale);
+    public abstract void SetLookupTable (string[] label, string[] text, string[] attr, bool hasPrev, bool hasNext, int cursor, int layout);
+}
+public void RegisterPanel (IMPanel panel) {
+    Bus.own_name
+        (GLib.BusType.SESSION,
+        "org.kde.impanel",
+        GLib.BusNameOwnerFlags.NONE,
+        (conn) => {
+        try {
+            conn.register_object ("/org/kde/impanel", (Kimpanel) panel);
+            conn.register_object ("/org/kde/impanel", (Kimpanel2) panel);
+        } catch (IOError e) {
+            stderr.printf ("Could not register service\n");
+        }
+    },
+        () => {
+        panel.PanelCreated ();
+        panel.PanelCreated2 ();
+    },
+        () => stderr.printf ("Could not aquire name\n"));
+}
+
+public interface IMPanel : Kimpanel, Kimpanel2 {}
